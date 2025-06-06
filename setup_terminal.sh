@@ -345,6 +345,8 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 plugins=(
   "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions"
   "zsh-syntax-highlighting:https://github.com/zsh-users/zsh-syntax-highlighting"
+  "zsh-completions:https://github.com/zsh-users/zsh-completions"
+  "fast-syntax-highlighting:https://github.com/zdharma-continuum/fast-syntax-highlighting"
 )
 
 for plugin_info in "${plugins[@]}"; do
@@ -358,6 +360,14 @@ for plugin_info in "${plugins[@]}"; do
     echo -e "${GREEN}✓ $plugin_name is already installed${NC}"
   fi
 done
+
+# Install Powerlevel10k theme
+if [[ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]]; then
+  echo -e "${YELLOW}Installing Powerlevel10k theme...${NC}"
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
+else
+  echo -e "${GREEN}✓ Powerlevel10k is already installed${NC}"
+fi
 
 # Create config directories
 echo -e "${BLUE}Creating configuration directories...${NC}"
