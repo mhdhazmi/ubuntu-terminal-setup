@@ -288,16 +288,24 @@ fi
 # Install Neovim Python provider
 if ! python3 -c "import pynvim" &>/dev/null 2>&1; then
   echo -e "${YELLOW}Installing Neovim Python provider...${NC}"
-  # Try pip3 with --user flag first
-  if command -v pip3 &>/dev/null; then
-    python3 -m pip install --user pynvim
+  # First try the apt package (preferred for Ubuntu)
+  if sudo apt install -y python3-pynvim 2>/dev/null; then
+    echo -e "${GREEN}✓ Installed python3-pynvim via apt${NC}"
   else
-    # Fallback to system package if available
-    sudo apt install -y python3-pynvim 2>/dev/null || {
-      echo -e "${YELLOW}Installing pip3 first...${NC}"
-      sudo apt install -y python3-pip
-      python3 -m pip install --user pynvim
-    }
+    # If apt package not available, create a virtual environment for Neovim
+    echo -e "${YELLOW}Creating Neovim Python environment...${NC}"
+    NVIM_VENV="$HOME/.config/nvim/venv"
+    if [[ ! -d "$NVIM_VENV" ]]; then
+      python3 -m venv "$NVIM_VENV"
+    fi
+    "$NVIM_VENV/bin/pip" install pynvim
+    
+    # Add to profile to make it available to Neovim
+    if ! grep -q "NVIM_PYTHON3" ~/.profile 2>/dev/null; then
+      echo "export NVIM_PYTHON3_HOST_PROG='$NVIM_VENV/bin/python3'" >> ~/.profile
+    fi
+    echo -e "${GREEN}✓ Installed pynvim in virtual environment${NC}"
+    echo -e "${YELLOW}Note: You'll need to logout/login or run: source ~/.profile${NC}"
   fi
 fi
 

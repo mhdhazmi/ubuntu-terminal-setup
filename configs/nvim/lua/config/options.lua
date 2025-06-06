@@ -50,3 +50,9 @@ opt.wrap = false -- Disable line wrap
 
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
+
+-- Python provider settings
+-- If using virtual environment for pynvim
+if vim.fn.filereadable(vim.fn.expand("~/.config/nvim/venv/bin/python3")) == 1 then
+  vim.g.python3_host_prog = vim.fn.expand("~/.config/nvim/venv/bin/python3")
+end
