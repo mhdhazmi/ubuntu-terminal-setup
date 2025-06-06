@@ -228,7 +228,7 @@ install_cargo_tool "bat"
 install_cargo_tool "fd" "fd-find"
 install_cargo_tool "rg" "ripgrep"
 install_cargo_tool "zoxide"
-install_cargo_tool "dust"
+# install_cargo_tool "dust"  # Disabled due to cargo conflicts
 install_cargo_tool "procs"
 install_cargo_tool "sd"
 install_cargo_tool "choose"
