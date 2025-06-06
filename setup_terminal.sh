@@ -284,6 +284,12 @@ else
   echo -e "${GREEN}✓ pipx is already installed${NC}"
 fi
 
+# Install Neovim Python provider
+if ! python3 -c "import pynvim" &>/dev/null; then
+  echo -e "${YELLOW}Installing Neovim Python provider...${NC}"
+  pipx install pynvim
+fi
+
 # Install httpie via pipx
 if ! command -v http &>/dev/null; then
   echo -e "${YELLOW}Installing HTTPie via pipx...${NC}"
@@ -410,8 +416,14 @@ echo -e "${BLUE}Installing modern IDE features...${NC}"
 # Install LSP servers for popular languages
 echo -e "${YELLOW}Installing Language Server Protocol servers...${NC}"
 
-# Node.js LSP servers
+# Node.js LSP servers and Neovim provider
 if command -v npm &>/dev/null; then
+  # Install Neovim Node.js provider
+  if ! npm list -g neovim &>/dev/null; then
+    echo -e "${YELLOW}Installing Neovim Node.js provider...${NC}"
+    sudo npm install -g neovim
+  fi
+  
   # TypeScript/JavaScript
   if ! command -v typescript-language-server &>/dev/null; then
     echo -e "${YELLOW}Installing TypeScript Language Server...${NC}"
@@ -504,6 +516,12 @@ echo -e "${YELLOW}Installing terminal session tools...${NC}"
 if ! command -v ruby &>/dev/null; then
   echo -e "${YELLOW}Installing Ruby...${NC}"
   sudo apt install -y ruby-full
+fi
+
+# Install Neovim Ruby provider
+if ! gem list neovim | grep -q neovim; then
+  echo -e "${YELLOW}Installing Neovim Ruby provider...${NC}"
+  sudo gem install neovim
 fi
 
 # tmuxinator - Manage tmux sessions
