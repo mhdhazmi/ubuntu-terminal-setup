@@ -259,29 +259,37 @@ fi
 # Install GitLab CLI
 if ! command -v glab &>/dev/null; then
   echo -e "${YELLOW}Installing GitLab CLI...${NC}"
-  glab_url=$(curl -s https://api.github.com/repos/gitlab-org/cli/releases/latest | jq -r '.assets[] | select(.name | test("linux_amd64\\.tar\\.gz$")) | .browser_download_url' | head -1)
-  if [[ -n "$glab_url" ]]; then
-    wget -q "$glab_url" -O - | tar -xz -C /tmp
-    sudo mv /tmp/bin/glab /usr/local/bin/ 2>/dev/null || sudo mv /tmp/glab /usr/local/bin/
-  else
-    echo -e "${RED}Could not find GitLab CLI release${NC}"
-  fi
+  # GitLab CLI is now available via apt
+  curl -fsSL https://gitlab.com/gitlab-org/cli/-/raw/main/scripts/install.sh | sh
 else
   echo -e "${GREEN}✓ GitLab CLI is already installed${NC}"
 fi
 
-# Install httpie
+# Install Python tools via pipx (Ubuntu/Debian PEP 668 compatibility)
+echo -e "${BLUE}Installing Python tools...${NC}"
+
+# Install pipx first if not available
+if ! command -v pipx &>/dev/null; then
+  echo -e "${YELLOW}Installing pipx...${NC}"
+  sudo apt update && sudo apt install -y pipx
+  # Ensure pipx PATH is available
+  pipx ensurepath
+else
+  echo -e "${GREEN}✓ pipx is already installed${NC}"
+fi
+
+# Install httpie via pipx
 if ! command -v http &>/dev/null; then
-  echo -e "${YELLOW}Installing HTTPie...${NC}"
-  python3 -m pip install --user httpie
+  echo -e "${YELLOW}Installing HTTPie via pipx...${NC}"
+  pipx install httpie
 else
   echo -e "${GREEN}✓ HTTPie is already installed${NC}"
 fi
 
-# Install tldr
+# Install tldr via pipx
 if ! command -v tldr &>/dev/null; then
-  echo -e "${YELLOW}Installing tldr...${NC}"
-  python3 -m pip install --user tldr
+  echo -e "${YELLOW}Installing tldr via pipx...${NC}"
+  pipx install tldr
 else
   echo -e "${GREEN}✓ tldr is already installed${NC}"
 fi
@@ -308,8 +316,8 @@ fi
 
 # Install thefuck
 if ! command -v fuck &>/dev/null; then
-  echo -e "${YELLOW}Installing thefuck...${NC}"
-  python3 -m pip install --user thefuck
+  echo -e "${YELLOW}Installing thefuck via pipx...${NC}"
+  pipx install thefuck
 else
   echo -e "${GREEN}✓ thefuck is already installed${NC}"
 fi
