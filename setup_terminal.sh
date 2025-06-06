@@ -349,7 +349,7 @@ plugins=(
 
 for plugin_info in "${plugins[@]}"; do
   plugin_name="${plugin_info%%:*}"
-  plugin_url="${plugin_info##*:}"
+  plugin_url="${plugin_info#*:}"
   
   if [[ ! -d "$ZSH_CUSTOM/plugins/$plugin_name" ]]; then
     echo -e "${YELLOW}Installing $plugin_name...${NC}"
