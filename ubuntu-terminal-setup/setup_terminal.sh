@@ -259,7 +259,7 @@ fi
 # Install GitLab CLI
 if ! command -v glab &>/dev/null; then
   echo -e "${YELLOW}Installing GitLab CLI...${NC}"
-  local glab_url=$(curl -s https://api.github.com/repos/gitlab-org/cli/releases/latest | jq -r '.assets[] | select(.name | test("linux_amd64\\.tar\\.gz$")) | .browser_download_url' | head -1)
+  glab_url=$(curl -s https://api.github.com/repos/gitlab-org/cli/releases/latest | jq -r '.assets[] | select(.name | test("linux_amd64\\.tar\\.gz$")) | .browser_download_url' | head -1)
   if [[ -n "$glab_url" ]]; then
     wget -q "$glab_url" -O - | tar -xz -C /tmp
     sudo mv /tmp/bin/glab /usr/local/bin/ 2>/dev/null || sudo mv /tmp/glab /usr/local/bin/
