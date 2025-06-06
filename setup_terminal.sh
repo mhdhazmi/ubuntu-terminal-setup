@@ -402,24 +402,211 @@ if [ "$MEMORY_OPTIMIZED" = true ] && [ -f /swapfile ]; then
   fi
 fi
 
+# ─── Modern IDE Features ────────────────────────────────────────────────────────
+echo -e "${BLUE}Installing modern IDE features...${NC}"
+
+# Install LSP servers for popular languages
+echo -e "${YELLOW}Installing Language Server Protocol servers...${NC}"
+
+# Node.js LSP servers
+if command -v npm &>/dev/null; then
+  # TypeScript/JavaScript
+  if ! command -v typescript-language-server &>/dev/null; then
+    echo -e "${YELLOW}Installing TypeScript Language Server...${NC}"
+    sudo npm install -g typescript typescript-language-server
+  fi
+  
+  # Python LSP
+  if ! command -v pyright &>/dev/null; then
+    echo -e "${YELLOW}Installing Pyright (Python LSP)...${NC}"
+    sudo npm install -g pyright
+  fi
+  
+  # Vue.js
+  if ! command -v vls &>/dev/null; then
+    echo -e "${YELLOW}Installing Vue Language Server...${NC}"
+    sudo npm install -g vls
+  fi
+  
+  # YAML
+  if ! command -v yaml-language-server &>/dev/null; then
+    echo -e "${YELLOW}Installing YAML Language Server...${NC}"
+    sudo npm install -g yaml-language-server
+  fi
+  
+  # Prettier (code formatter)
+  if ! command -v prettier &>/dev/null; then
+    echo -e "${YELLOW}Installing Prettier...${NC}"
+    sudo npm install -g prettier
+  fi
+fi
+
+# Install Rust analyzer for Rust development
+if command -v rustup &>/dev/null; then
+  if ! command -v rust-analyzer &>/dev/null; then
+    echo -e "${YELLOW}Installing rust-analyzer...${NC}"
+    rustup component add rust-analyzer
+  fi
+fi
+
+# Install Go tools
+if command -v go &>/dev/null; then
+  if ! command -v gopls &>/dev/null; then
+    echo -e "${YELLOW}Installing gopls (Go Language Server)...${NC}"
+    go install golang.org/x/tools/gopls@latest
+  fi
+fi
+
+# Install modern file explorers and managers
+echo -e "${YELLOW}Installing file management tools...${NC}"
+
+# lf - Terminal file manager
+if ! command -v lf &>/dev/null; then
+  echo -e "${YELLOW}Installing lf (terminal file manager)...${NC}"
+  env CGO_ENABLED=0 go install -ldflags="-s -w" github.com/gokcehan/lf@latest 2>/dev/null || {
+    # Fallback to downloading binary
+    wget -q https://github.com/gokcehan/lf/releases/latest/download/lf-linux-amd64.tar.gz -O - | tar -xz -C ~/.local/bin
+  }
+fi
+
+# broot - Interactive tree view
+if ! command -v broot &>/dev/null; then
+  echo -e "${YELLOW}Installing broot (interactive tree)...${NC}"
+  cargo install broot
+fi
+
+# Install additional Git UI tools
+echo -e "${YELLOW}Installing Git UI tools...${NC}"
+
+# tig - Text-mode interface for Git
+if ! command -v tig &>/dev/null; then
+  echo -e "${YELLOW}Installing tig...${NC}"
+  sudo apt install -y tig
+fi
+
+# Install debugging and profiling tools
+echo -e "${YELLOW}Installing debugging tools...${NC}"
+
+# hyperfine - Command-line benchmarking tool
+if ! command -v hyperfine &>/dev/null; then
+  echo -e "${YELLOW}Installing hyperfine...${NC}"
+  wget -q https://github.com/sharkdp/hyperfine/releases/download/v1.18.0/hyperfine_1.18.0_amd64.deb
+  sudo dpkg -i hyperfine_1.18.0_amd64.deb
+  rm hyperfine_1.18.0_amd64.deb
+fi
+
+# Install terminal session management
+echo -e "${YELLOW}Installing terminal session tools...${NC}"
+
+# tmuxinator - Manage tmux sessions
+if ! command -v tmuxinator &>/dev/null; then
+  echo -e "${YELLOW}Installing tmuxinator...${NC}"
+  sudo gem install tmuxinator
+fi
+
+# Install code search and navigation tools
+echo -e "${YELLOW}Installing code search tools...${NC}"
+
+# ast-grep - Structural search/replace tool
+if ! command -v ast-grep &>/dev/null; then
+  echo -e "${YELLOW}Installing ast-grep...${NC}"
+  cargo install ast-grep
+fi
+
+# Install project templates and scaffolding
+echo -e "${YELLOW}Installing project scaffolding tools...${NC}"
+
+# cookiecutter - Project templates
+if ! command -v cookiecutter &>/dev/null; then
+  echo -e "${YELLOW}Installing cookiecutter...${NC}"
+  pipx install cookiecutter
+fi
+
+# Install documentation tools
+echo -e "${YELLOW}Installing documentation tools...${NC}"
+
+# mdbook - Create books from markdown
+if ! command -v mdbook &>/dev/null; then
+  echo -e "${YELLOW}Installing mdbook...${NC}"
+  cargo install mdbook
+fi
+
+# glow - Markdown renderer for terminal
+if ! command -v glow &>/dev/null; then
+  echo -e "${YELLOW}Installing glow...${NC}"
+  go install github.com/charmbracelet/glow@latest 2>/dev/null || {
+    # Fallback to downloading binary
+    wget -q https://github.com/charmbracelet/glow/releases/latest/download/glow_Linux_x86_64.tar.gz -O - | tar -xz -C ~/.local/bin glow
+  }
+fi
+
+# Install additional developer productivity tools
+echo -e "${YELLOW}Installing developer productivity tools...${NC}"
+
+# watchexec - Execute commands when files change
+if ! command -v watchexec &>/dev/null; then
+  echo -e "${YELLOW}Installing watchexec...${NC}"
+  cargo install watchexec-cli
+fi
+
+# just - Command runner (like make but better)
+if ! command -v just &>/dev/null; then
+  echo -e "${YELLOW}Installing just...${NC}"
+  cargo install just
+fi
+
+# tokei - Count lines of code
+if ! command -v tokei &>/dev/null; then
+  echo -e "${YELLOW}Installing tokei...${NC}"
+  cargo install tokei
+fi
+
+# Install Go if not present (needed for some tools)
+if ! command -v go &>/dev/null; then
+  echo -e "${YELLOW}Installing Go...${NC}"
+  wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz
+  rm go1.21.5.linux-amd64.tar.gz
+  echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.profile
+  echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.profile
+  export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+fi
+
+# Install Ruby if not present (needed for tmuxinator)
+if ! command -v ruby &>/dev/null; then
+  echo -e "${YELLOW}Installing Ruby...${NC}"
+  sudo apt install -y ruby-full
+fi
+
 # Source the new PATH additions
 source ~/.profile 2>/dev/null || true
 
 echo
 echo -e "${GREEN}╭─────────────────────────────────────────────────────────────────────────────╮${NC}"
-echo -e "${GREEN}│                    Memory-Optimized Setup Complete! 🎉                        │${NC}"
+echo -e "${GREEN}│               Modern IDE Terminal Setup Complete! 🎉                          │${NC}"
 echo -e "${GREEN}╰─────────────────────────────────────────────────────────────────────────────╯${NC}"
 echo
-echo -e "${BLUE}What was optimized:${NC}"
-echo -e "• Used pre-built binaries instead of compiling when memory < 1GB"
-echo -e "• Created temporary swap file for compilation if needed"
-echo -e "• Limited cargo to single-threaded compilation"
-echo -e "• Installed minimal font set (JetBrains Mono only)"
-echo -e "• Installed essential zsh plugins only"
+echo -e "${BLUE}IDE Features Installed:${NC}"
+echo -e "• Language Server Protocol (LSP) servers for multiple languages"
+echo -e "• Modern file managers (lf, broot) and Git UI tools (tig, gitui, lazygit)"
+echo -e "• Code formatters and linters (Prettier, rust-analyzer)"
+echo -e "• Development workflow tools (watchexec, just, tmuxinator)"
+echo -e "• Documentation tools (glow, mdbook) and code search (ast-grep)"
+echo -e "• Project scaffolding (cookiecutter) and benchmarking (hyperfine)"
 echo
-echo -e "${BLUE}Next steps:${NC}"
-echo -e "1. Logout and login again to apply shell changes"
-echo -e "2. Create your .zshrc configuration"
-echo -e "3. For SSH terminals, ensure your client uses JetBrains Mono Nerd Font"
+echo -e "${BLUE}Quick Start Guide:${NC}"
+echo -e "1. Copy configs: ${YELLOW}cp zshrc ~/.zshrc && cp tmux.conf ~/.tmux.conf${NC}"
+echo -e "2. Start IDE session: ${YELLOW}tmux new -s dev${NC} or just ${YELLOW}dev${NC}"
+echo -e "3. Open Neovim IDE: ${YELLOW}nvim${NC} or ${YELLOW}ide${NC}"
+echo -e "4. File explorer: ${YELLOW}lf${NC} or ${YELLOW}broot${NC}"
+echo -e "5. Search code: ${YELLOW}rgp 'pattern'${NC} (with preview)"
+echo -e "6. Git UI: ${YELLOW}lazygit${NC}, ${YELLOW}gitui${NC}, or ${YELLOW}tig${NC}"
 echo
-echo -e "${GREEN}Memory-optimized Ubuntu terminal setup complete! 🚀${NC}"
+echo -e "${BLUE}Useful aliases added:${NC}"
+echo -e "• ${YELLOW}ide${NC} - Open Neovim"
+echo -e "• ${YELLOW}dev${NC} - Start/attach tmux dev session"
+echo -e "• ${YELLOW}rgp${NC} - Ripgrep with preview"
+echo -e "• ${YELLOW}fzfp${NC} - Fuzzy find with preview"
+echo -e "• ${YELLOW}project${NC} - Create new project"
+echo
+echo -e "${GREEN}Your Ubuntu server now has IDE-like features! Happy coding! 🚀${NC}"
