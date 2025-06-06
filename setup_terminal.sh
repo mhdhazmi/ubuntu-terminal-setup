@@ -106,6 +106,8 @@ apt_tools=(
   "neofetch"     # System info
   "net-tools"    # Network tools
   "fontconfig"   # Font configuration
+  "xclip"        # Clipboard support for X11
+  "wl-clipboard" # Clipboard support for Wayland
   # "exa"          # Modern ls (replaced by eza) - disabled due to cargo conflicts
 )
 

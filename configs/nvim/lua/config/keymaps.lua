@@ -1,0 +1,71 @@
+local map = vim.keymap.set
+
+-- ========== Clipboard Keybindings ==========
+-- These make clipboard operations more intuitive
+
+-- Yank to clipboard
+map("n", "<leader>y", '"+y', { desc = "Yank to clipboard" })
+map("v", "<leader>y", '"+y', { desc = "Yank to clipboard" })
+map("n", "<leader>Y", '"+Y', { desc = "Yank line to clipboard" })
+
+-- Paste from clipboard
+map("n", "<leader>p", '"+p', { desc = "Paste from clipboard after cursor" })
+map("n", "<leader>P", '"+P', { desc = "Paste from clipboard before cursor" })
+map("v", "<leader>p", '"+p', { desc = "Paste from clipboard" })
+
+-- Delete without yanking
+map("n", "<leader>d", '"_d', { desc = "Delete without yanking" })
+map("v", "<leader>d", '"_d', { desc = "Delete without yanking" })
+
+-- ========== Better Default Mappings ==========
+-- Better up/down
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+
+-- Move to window using the <ctrl> hjkl keys
+map("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
+map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
+map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
+map("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
+
+-- Resize window using <ctrl> arrow keys
+map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
+map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
+
+-- Move Lines
+map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move down" })
+map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move up" })
+map("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move down" })
+map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move up" })
+map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" })
+map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
+
+-- Clear search with <esc>
+map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
+
+-- Better indenting
+map("v", "<", "<gv")
+map("v", ">", ">gv")
+
+-- Save file
+map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+
+-- Quit
+map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
+
+-- New file
+map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
+
+-- ========== Clipboard Debugging ==========
+-- Check clipboard support
+map("n", "<leader>cc", function()
+  local clipboard = vim.fn.getreg("+")
+  if clipboard ~= "" then
+    print("Clipboard content: " .. clipboard)
+  else
+    print("Clipboard is empty")
+  end
+  print("Clipboard support: " .. vim.inspect(vim.fn.has("clipboard")))
+end, { desc = "Check clipboard" })
