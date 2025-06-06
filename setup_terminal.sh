@@ -500,6 +500,12 @@ fi
 # Install terminal session management
 echo -e "${YELLOW}Installing terminal session tools...${NC}"
 
+# Install Ruby first if needed (required for tmuxinator)
+if ! command -v ruby &>/dev/null; then
+  echo -e "${YELLOW}Installing Ruby...${NC}"
+  sudo apt install -y ruby-full
+fi
+
 # tmuxinator - Manage tmux sessions
 if ! command -v tmuxinator &>/dev/null; then
   echo -e "${YELLOW}Installing tmuxinator...${NC}"
@@ -574,11 +580,7 @@ if ! command -v go &>/dev/null; then
   export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 fi
 
-# Install Ruby if not present (needed for tmuxinator)
-if ! command -v ruby &>/dev/null; then
-  echo -e "${YELLOW}Installing Ruby...${NC}"
-  sudo apt install -y ruby-full
-fi
+# Ruby is already installed above when needed for tmuxinator
 
 # Source the new PATH additions
 source ~/.profile 2>/dev/null || true
