@@ -161,8 +161,40 @@ install_github_release() {
   
   echo -e "${YELLOW}Installing $tool_name from GitHub...${NC}"
   
-  # Get latest release URL
-  local latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | contains("linux") and contains("x86_64") and (contains(".tar.gz") or contains(".zip"))) | .browser_download_url' | head -1)
+  # Get latest release URL with more flexible patterns
+  local latest_url=""
+  
+  # Try different naming patterns based on the tool
+  case "$tool_name" in
+    "fzf")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("linux_amd64\\.tar\\.gz$|linux_amd64\\.tgz$")) | .browser_download_url' | head -1)
+      ;;
+    "lazygit")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("Linux_x86_64\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    "delta")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("x86_64-unknown-linux-gnu\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    "gitui")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("linux-musl\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    "btop")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("x86_64-linux-musl\\.tbz$")) | .browser_download_url' | head -1)
+      ;;
+    "duf")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("linux_x86_64\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    "gping")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("x86_64-unknown-linux-musl\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    "bandwhich")
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("x86_64-unknown-linux-musl\\.tar\\.gz$")) | .browser_download_url' | head -1)
+      ;;
+    *)
+      # Generic fallback pattern
+      latest_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | jq -r '.assets[] | select(.name | test("linux.*x86_64|x86_64.*linux"; "i") and (.name | test("\\.tar\\.gz$|\\.tgz$|\\.zip$"))) | .browser_download_url' | head -1)
+      ;;
+  esac
   
   if [[ -z "$latest_url" ]]; then
     echo -e "${RED}Could not find suitable release for $tool_name${NC}"
@@ -174,8 +206,10 @@ install_github_release() {
   cd "$temp_dir"
   wget -q "$latest_url" -O archive
   
-  if [[ "$latest_url" == *.tar.gz ]]; then
+  if [[ "$latest_url" == *.tar.gz ]] || [[ "$latest_url" == *.tgz ]]; then
     tar -xzf archive
+  elif [[ "$latest_url" == *.tbz ]]; then
+    tar -xjf archive
   else
     unzip -q archive
   fi
@@ -225,8 +259,13 @@ fi
 # Install GitLab CLI
 if ! command -v glab &>/dev/null; then
   echo -e "${YELLOW}Installing GitLab CLI...${NC}"
-  curl -s https://api.github.com/repos/profclems/glab/releases/latest | jq -r '.assets[] | select(.name | contains("linux") and contains("amd64") and contains(".tar.gz")) | .browser_download_url' | head -1 | xargs wget -q -O - | tar -xz -C /tmp
-  sudo mv /tmp/bin/glab /usr/local/bin/
+  local glab_url=$(curl -s https://api.github.com/repos/gitlab-org/cli/releases/latest | jq -r '.assets[] | select(.name | test("linux_amd64\\.tar\\.gz$")) | .browser_download_url' | head -1)
+  if [[ -n "$glab_url" ]]; then
+    wget -q "$glab_url" -O - | tar -xz -C /tmp
+    sudo mv /tmp/bin/glab /usr/local/bin/ 2>/dev/null || sudo mv /tmp/glab /usr/local/bin/
+  else
+    echo -e "${RED}Could not find GitLab CLI release${NC}"
+  fi
 else
   echo -e "${GREEN}✓ GitLab CLI is already installed${NC}"
 fi
