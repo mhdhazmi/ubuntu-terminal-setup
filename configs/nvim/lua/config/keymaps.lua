@@ -90,3 +90,11 @@ map("n", "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", { desc = "Clos
 
 -- Dashboard
 map("n", "<leader>;", "<cmd>Dashboard<cr>", { desc = "Dashboard" })
+
+-- LSP
+map("n", "<leader>li", "<cmd>LspInfo<cr>", { desc = "LSP Info" })
+map("n", "<leader>lr", "<cmd>LspRestart<cr>", { desc = "LSP Restart" })
+map("n", "<leader>lf", "<cmd>lua vim.lsp.buf.format()<cr>", { desc = "LSP Format" })
+
+-- Diagnostics
+map("n", "<leader>dt", "<cmd>Telescope diagnostics<cr>", { desc = "Telescope diagnostics" })

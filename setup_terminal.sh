@@ -455,6 +455,12 @@ if command -v npm &>/dev/null; then
     sudo npm install -g pyright
   fi
   
+  # Ensure python3-dev is available for better LSP support
+  if ! dpkg -l | grep -q python3-dev; then
+    echo -e "${YELLOW}Installing python3-dev for better LSP support...${NC}"
+    sudo apt install -y python3-dev
+  fi
+  
   # Vue.js
   if ! command -v vls &>/dev/null; then
     echo -e "${YELLOW}Installing Vue Language Server...${NC}"
