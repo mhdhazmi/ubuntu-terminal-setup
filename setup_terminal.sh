@@ -106,7 +106,7 @@ apt_tools=(
   "neofetch"     # System info
   "net-tools"    # Network tools
   "fontconfig"   # Font configuration
-  "exa"          # Modern ls (available in apt)
+  # "exa"          # Modern ls (replaced by eza) - disabled due to cargo conflicts
 )
 
 for tool in "${apt_tools[@]}"; do
@@ -242,7 +242,7 @@ if [ "$MEMORY_OPTIMIZED" = true ]; then
   
   # Install only essential cargo tools with single-threaded compilation
   install_cargo_tool "zoxide"
-  install_cargo_tool "dust"
+  # install_cargo_tool "dust"  # Disabled due to cargo conflicts
   
 else
   echo -e "${YELLOW}Installing via cargo (sufficient memory available)...${NC}"
@@ -252,7 +252,7 @@ else
   install_cargo_tool "fd" "fd-find"
   install_cargo_tool "rg" "ripgrep"
   install_cargo_tool "zoxide"
-  install_cargo_tool "dust"
+  # install_cargo_tool "dust"  # Disabled due to cargo conflicts
   install_cargo_tool "procs"
   install_cargo_tool "sd"
 fi
@@ -269,21 +269,31 @@ else
   echo -e "${GREEN}✓ GitHub CLI is already installed${NC}"
 fi
 
-# Install Python tools
+# Install Python tools via pipx (Ubuntu/Debian PEP 668 compatibility)
 echo -e "${BLUE}Installing Python tools...${NC}"
 
-# Install httpie
+# Install pipx first if not available
+if ! command -v pipx &>/dev/null; then
+  echo -e "${YELLOW}Installing pipx...${NC}"
+  sudo apt update && sudo apt install -y pipx
+  # Ensure pipx PATH is available
+  pipx ensurepath
+else
+  echo -e "${GREEN}✓ pipx is already installed${NC}"
+fi
+
+# Install httpie via pipx
 if ! command -v http &>/dev/null; then
-  echo -e "${YELLOW}Installing HTTPie...${NC}"
-  python3 -m pip install --user httpie
+  echo -e "${YELLOW}Installing HTTPie via pipx...${NC}"
+  pipx install httpie
 else
   echo -e "${GREEN}✓ HTTPie is already installed${NC}"
 fi
 
-# Install tldr
+# Install tldr via pipx
 if ! command -v tldr &>/dev/null; then
-  echo -e "${YELLOW}Installing tldr...${NC}"
-  python3 -m pip install --user tldr
+  echo -e "${YELLOW}Installing tldr via pipx...${NC}"
+  pipx install tldr
 else
   echo -e "${GREEN}✓ tldr is already installed${NC}"
 fi
