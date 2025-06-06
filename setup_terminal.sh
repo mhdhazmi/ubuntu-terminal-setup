@@ -100,6 +100,7 @@ apt_tools=(
   "zip"          # Archive creation
   "build-essential" # Compilation tools
   "python3-pip"  # Python package manager
+  "python3-venv" # Python virtual environments
   "nodejs"       # Node.js runtime
   "npm"          # Node package manager
   "ncdu"         # NCurses disk usage
@@ -285,9 +286,19 @@ else
 fi
 
 # Install Neovim Python provider
-if ! python3 -c "import pynvim" &>/dev/null; then
+if ! python3 -c "import pynvim" &>/dev/null 2>&1; then
   echo -e "${YELLOW}Installing Neovim Python provider...${NC}"
-  pipx install pynvim
+  # Try pip3 with --user flag first
+  if command -v pip3 &>/dev/null; then
+    python3 -m pip install --user pynvim
+  else
+    # Fallback to system package if available
+    sudo apt install -y python3-pynvim 2>/dev/null || {
+      echo -e "${YELLOW}Installing pip3 first...${NC}"
+      sudo apt install -y python3-pip
+      python3 -m pip install --user pynvim
+    }
+  fi
 fi
 
 # Install httpie via pipx
